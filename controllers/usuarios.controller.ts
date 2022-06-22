@@ -12,7 +12,7 @@ usuariosRouter.post("/login", (req: Request, res: Response) => {
   console.log(req.body)
 
   db.query(
-    "SELECT dni, contraseña, id_tipousuario FROM usuario where dni =?",
+    "SELECT dni, contraseña, id_tipousuario, id_usuario FROM usuario where dni =?",
     [params.dni],
     (err: any, result: any) => {
       if (err) {
@@ -26,7 +26,7 @@ usuariosRouter.post("/login", (req: Request, res: Response) => {
               rol: result[0].id_tipousuario,
             }, 'taller_formación');
             
-            res.json({message: "Login exitoso",token, data: {dni: result[0].dni}});
+            res.json({message: "Login exitoso",token, data: {dni: result[0].dni, id_usuario: result[0].id_usuario}});
           } else {
             res.json({message: "Contraseña incorrecta"});
           }

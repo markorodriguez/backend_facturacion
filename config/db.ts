@@ -10,7 +10,7 @@ const db = mysql.createPool({
     queueLimit: 0
 })
 
-const connection = db.getConnection((err:any, connection:any)=>{
+ db.getConnection((err:any, connection:any)=>{
     if(err){
         console.error(err)
     }else{

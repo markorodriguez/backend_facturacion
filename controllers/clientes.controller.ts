@@ -24,12 +24,31 @@ clienteRouter.post('/consumir-ruc', (req: Request, res: Response) => {
             provincia: r.data.provincia,
             departamento: r.data.departamento,
         })
-        console.log('response', r.data)
+        //console.log('response', r.data)
     }).catch((err: any) => {
         res.json({
             message: 'Error',
         })
-        console.log('error', err)
+        //console.log('error', err)
+    })
+})
+
+clienteRouter.post('/consumir-dni', (req: Request, res: Response) => {
+    const params: ICliente = req.body
+    Axios.get(`https://api.apis.net.pe/v1/dni?numero=${params.dni}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenApi}`
+        }
+    }).then((r:any)=>{
+        res.json({
+            message: 'Success',
+            dni: r.data.numeroDocumento,
+            nombre: r.data.nombres,
+            apPaterno: r.data.apellidoPaterno,
+            apMaterno: r.data.apellidoMaterno,
+        })
+        //console.log('response', r.data)
     })
 })
 

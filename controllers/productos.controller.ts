@@ -17,5 +17,6 @@ productoRouter.get("/obtener", (req: Request, res: Response)=>{
 
 })
 
+//F002-0000000000346 EJEMPLO FACTURACION
 
 export default productoRouter
