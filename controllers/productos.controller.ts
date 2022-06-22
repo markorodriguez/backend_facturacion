@@ -10,7 +10,7 @@ productoRouter.get("/obtener", (req: Request, res: Response)=>{
         if(err){
             console.error(err)
         }else{
-            console.log(result)
+           // console.log(result)
             res.send(result)
         }
     })
