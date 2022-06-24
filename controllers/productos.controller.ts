@@ -19,4 +19,29 @@ productoRouter.get("/obtener", (req: Request, res: Response)=>{
 
 //F002-0000000000346 EJEMPLO FACTURACION
 
+productoRouter.get("/categorias", (req:Request, res: Response)=>{
+    db.query('SELECT * FROM  tipo_producto', (err:any, result: any)=>{
+        if(!err){
+            res.send(result)
+        }else{
+            console.log(err)
+        }
+    })
+})
+
+productoRouter.post('/agregar-producto', (req:Request, res:Response)=>{
+    
+    
+    const {id_tipoproducto, nombreproducto, descripcion, precio, stock} = req.body.producto
+
+    db.query('INSERT INTO producto SET ?', {id_tipoproducto: id_tipoproducto, nombreproducto: nombreproducto, descripcion: descripcion, precio: Number.parseFloat(precio), stock: Number.parseInt(stock)}, (err:any)=>{
+        if(!err){
+            console.log('Registro añadido')
+        }
+    })
+
+    
+})
+
+
 export default productoRouter

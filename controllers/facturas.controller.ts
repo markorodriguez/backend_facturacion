@@ -261,4 +261,34 @@ registrosRouter.post("/generar-boleta", (req: Request, res: Response) => {
     })
 })
 
+registrosRouter.get("/obtener-facturas", (req: Request, res: Response)=>{
+    db.query('SELECT * FROM detalle_factura df JOIN factura f ON df.id_detallefactura = f.id_detallefactura JOIN cliente c ON df.id_cliente = c.id_cliente', (err:any, rows:any)=>{
+        
+        const facturas = [...rows].filter((row)=>(row.id_tipocliente == 2))
+        const boletas = [...rows].filter((row)=>(row.id_tipocliente == 1))
+        
+        console.log('facturas', facturas)
+        console.log('boletas', boletas)
+
+        res.send({
+            boletas: boletas,
+            facturas: facturas
+        })
+    })
+})
+
+registrosRouter.post("/anular", (req: Request, res: Response)=>{
+    const id = req.body.id
+    db.query(`UPDATE detalle_factura SET estado = 'CANCELADO' WHERE id_detallefactura = ${id}`, (err:any, results:any, fields:any)=>{
+        if(!err){
+            console.log(results)
+            res.send('Factura cancelada')
+            console.log('Factura cancelada')
+        }else{
+            console.log(err)
+        }
+    })
+})
+
+
 export default registrosRouter;
