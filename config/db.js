@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mysql = require('mysql2');
 const db = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'admin',
-    database: 'db_facturacion',
+    host: 'sql10.freemysqlhosting.net',
+    port: '3306',
+    user: 'sql10501082',
+    password: '574iXx9hzB',
+    database: 'sql10501082',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
