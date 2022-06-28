@@ -57,7 +57,7 @@ usuariosRouter.post("/registrar-usuario", (req, res) => {
     const { persona } = req.body;
     console.log(persona);
     db_1.default.query(`INSERT INTO usuario SET ?`, {
-        id_tipousuario: 1,
+        id_tipousuario: persona.id_tipousuario,
         dni: Number.parseInt(persona.dni),
         nombres: persona.nombre,
         apellidos: persona.apPaterno + ' ' + persona.apMaterno,

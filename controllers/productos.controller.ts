@@ -35,7 +35,7 @@ productoRouter.post('/agregar-producto', (req: Request, res: Response) => {
 
     db.query('INSERT INTO producto SET ?', { id_tipoproducto: id_tipoproducto, nombreproducto: nombreproducto, descripcion: descripcion, precio: Number.parseFloat(precio), stock: Number.parseInt(stock) }, (err: any) => {
         if (!err) {
-            console.log('Registro añadido')
+            res.json({message: 'success'})
         }
     })
 
@@ -71,6 +71,7 @@ productoRouter.post('/editar', (req: Request, res: Response) => {
             res.json({message: 'success'})
             console.log('Producto editado')
         }else{
+            res.json({message: 'error'})
             console.log(err)
             res.send(null)
         }
@@ -85,7 +86,7 @@ productoRouter.post('/borrar-producto', (req: Request, res: Response) => {
             console.log('Producto borrado')
             res.json({ message: 'success' })
         } else {
-            res.send(null)
+            res.json({message: 'error'})
         }
     })
 })
