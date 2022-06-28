@@ -33,7 +33,7 @@ registrosRouter.post("/generar-factura", (req, res) => {
                         });
                         const anoInicio = 2011;
                         const procesoAno = (0, moment_1.default)().get('year');
-                        const nombreFactura = 'E' + ('0000000' + (procesoAno - anoInicio).toString()).slice(-5) + '-' + id_detallefactura;
+                        const nombreFactura = 'F' + ('0000000' + (procesoAno - anoInicio).toString()).slice(-5) + '-' + id_detallefactura;
                         db_1.default.query('INSERT INTO detalle_factura SET ?', {
                             id_detallefactura: id_detallefactura,
                             id_cliente: Number.parseInt(empresa.ruc).toString(),
@@ -48,7 +48,7 @@ registrosRouter.post("/generar-factura", (req, res) => {
                                     id_detallefactura: id_detallefactura,
                                     numerofactura: nombreFactura,
                                 }, (err) => {
-                                    !err ? console.log('FACTURA GENERADA') : console.log(err);
+                                    !err ? res.json({ message: 'success' }) : console.log(err);
                                 });
                             }
                             else {
@@ -107,7 +107,7 @@ registrosRouter.post("/generar-factura", (req, res) => {
                                             id_detallefactura: id_detallefactura,
                                             numerofactura: nombreFactura,
                                         }, (err) => {
-                                            !err ? console.log('FACTURA GENERADA') : console.log(err);
+                                            !err ? res.json({ message: 'success' }) : console.log(err);
                                         });
                                     }
                                     else {
@@ -171,7 +171,7 @@ registrosRouter.post("/generar-boleta", (req, res) => {
                                     id_detallefactura: id_detallefactura,
                                     numerofactura: nombreFactura,
                                 }, (err) => {
-                                    !err ? console.log('FACTURA GENERADA') : console.log(err);
+                                    !err ? res.json({ message: 'success' }) : console.log(err);
                                 });
                             }
                             else {
@@ -231,7 +231,7 @@ registrosRouter.post("/generar-boleta", (req, res) => {
                                             id_detallefactura: id_detallefactura,
                                             numerofactura: nombreFactura,
                                         }, (err) => {
-                                            !err ? console.log('FACTURA GENERADA') : console.log(err);
+                                            !err ? res.json({ message: 'success' }) : console.log(err);
                                         });
                                     }
                                     else {
@@ -256,8 +256,6 @@ registrosRouter.get("/obtener-facturas", (req, res) => {
     db_1.default.query('SELECT * FROM detalle_factura df JOIN factura f ON df.id_detallefactura = f.id_detallefactura JOIN cliente c ON df.id_cliente = c.id_cliente', (err, rows) => {
         const facturas = [...rows].filter((row) => (row.id_tipocliente == 2));
         const boletas = [...rows].filter((row) => (row.id_tipocliente == 1));
-        console.log('facturas', facturas);
-        console.log('boletas', boletas);
         res.send({
             boletas: boletas,
             facturas: facturas
@@ -266,14 +264,32 @@ registrosRouter.get("/obtener-facturas", (req, res) => {
 });
 registrosRouter.post("/anular", (req, res) => {
     const id = req.body.id;
-    db_1.default.query(`UPDATE detalle_factura SET estado = 'CANCELADO' WHERE id_detallefactura = ${id}`, (err, results, fields) => {
-        if (!err) {
-            console.log(results);
-            res.send('Factura cancelada');
-            console.log('Factura cancelada');
+    console.log(id);
+    db_1.default.query(`SELECT * FROM detalle_factura df JOIN detalle_productos dp ON df.id_detallefactura=dp.id_detallefactura JOIN factura f ON f.id_detallefactura = df.id_detallefactura JOIN producto p on p.id_producto = dp.id_producto  WHERE df.id_detallefactura=${id}`, (err, result) => {
+        if (result[0].estado == "FACTURADO") {
+            if (!err) {
+                result.map((pedido) => {
+                    const { id_producto, cantidad } = pedido;
+                    db_1.default.query(`SELECT * FROM producto WHERE id_producto = ${id_producto}`, (err, producto) => {
+                        db_1.default.query(`UPDATE producto SET stock=${producto[0].stock + cantidad} WHERE id_producto = ${id_producto}`, (err, fields) => {
+                            if (!err) {
+                                console.log('Stock actualizado');
+                            }
+                        });
+                    });
+                });
+                db_1.default.query(`UPDATE detalle_factura SET estado ="CANCELADO" WHERE id_detallefactura = ${id}`, (err) => {
+                    if (!err) {
+                        console.log('Factura cancelada');
+                    }
+                });
+            }
+            else {
+                console.log(err);
+            }
         }
         else {
-            console.log(err);
+            console.log('Factura ya cancelada');
         }
     });
 });

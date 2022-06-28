@@ -36,4 +36,47 @@ productoRouter.post('/agregar-producto', (req, res) => {
         }
     });
 });
+productoRouter.get('/especifico/:_id', (req, res) => {
+    const { _id } = req.params;
+    db_1.default.query('SELECT * FROM  tipo_producto', (err, result) => {
+        if (!err) {
+            db_1.default.query(`SELECT * FROM producto p JOIN tipo_producto tp ON p.id_tipoproducto = tp.id_tipoproducto WHERE p.id_producto = ${_id}`, ((err, producto) => {
+                if (producto.length > 0) {
+                    res.json({ producto: producto[0], tipos: result });
+                }
+                else {
+                    res.json(null);
+                }
+            }));
+        }
+        else {
+            console.log(err);
+        }
+    });
+});
+productoRouter.post('/editar', (req, res) => {
+    const { id_producto, id_tipoproducto, nombreproducto, descripcion, precio, stock } = req.body;
+    db_1.default.query(`UPDATE producto SET id_tipoproducto=${id_tipoproducto}, nombreproducto="${nombreproducto}", descripcion="${descripcion}", precio=${precio}, stock=${stock} WHERE id_producto=${id_producto}`, (err) => {
+        if (!err) {
+            res.json({ message: 'success' });
+            console.log('Producto editado');
+        }
+        else {
+            console.log(err);
+            res.send(null);
+        }
+    });
+});
+productoRouter.post('/borrar-producto', (req, res) => {
+    const { id_producto } = req.body;
+    db_1.default.query(`DELETE FROM producto WHERE id_producto = ${id_producto}`, (err) => {
+        if (!err) {
+            console.log('Producto borrado');
+            res.json({ message: 'success' });
+        }
+        else {
+            res.send(null);
+        }
+    });
+});
 exports.default = productoRouter;

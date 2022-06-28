@@ -36,7 +36,7 @@ registrosRouter.post("/generar-factura", (req: Request, res: Response) => {
                         })
                         const anoInicio = 2011
                         const procesoAno = moment().get('year')
-                        const nombreFactura = 'E' + ('0000000' + (procesoAno - anoInicio).toString()).slice(-5) + '-' + id_detallefactura
+                        const nombreFactura = 'F' + ('0000000' + (procesoAno - anoInicio).toString()).slice(-5) + '-' + id_detallefactura
 
                         db.query('INSERT INTO detalle_factura SET ?', {
                             id_detallefactura: id_detallefactura,
@@ -52,7 +52,7 @@ registrosRouter.post("/generar-factura", (req: Request, res: Response) => {
                                     id_detallefactura: id_detallefactura,
                                     numerofactura: nombreFactura,
                                 }, (err: any) => {
-                                    !err ? console.log('FACTURA GENERADA') : console.log(err)
+                                    !err ? res.json({ message: 'success' }) : console.log(err)
                                 })
                             } else {
                                 console.log(err)
@@ -112,7 +112,7 @@ registrosRouter.post("/generar-factura", (req: Request, res: Response) => {
                                             id_detallefactura: id_detallefactura,
                                             numerofactura: nombreFactura,
                                         }, (err: any) => {
-                                            !err ? console.log('FACTURA GENERADA') : console.log(err)
+                                            !err ? res.json({ message: 'success' }) : console.log(err)
                                         })
                                     } else {
                                         console.log(err)
@@ -181,7 +181,7 @@ registrosRouter.post("/generar-boleta", (req: Request, res: Response) => {
                                     id_detallefactura: id_detallefactura,
                                     numerofactura: nombreFactura,
                                 }, (err: any) => {
-                                    !err ? console.log('FACTURA GENERADA') : console.log(err)
+                                    !err ? res.json({ message: 'success' }) : console.log(err)
                                 })
                             } else {
                                 console.log(err)
@@ -242,7 +242,7 @@ registrosRouter.post("/generar-boleta", (req: Request, res: Response) => {
                                             id_detallefactura: id_detallefactura,
                                             numerofactura: nombreFactura,
                                         }, (err: any) => {
-                                            !err ? console.log('FACTURA GENERADA') : console.log(err)
+                                            !err ? res.json({ message: 'success' }) : console.log(err)
                                         })
                                     } else {
                                         console.log(err)
@@ -261,14 +261,11 @@ registrosRouter.post("/generar-boleta", (req: Request, res: Response) => {
     })
 })
 
-registrosRouter.get("/obtener-facturas", (req: Request, res: Response)=>{
-    db.query('SELECT * FROM detalle_factura df JOIN factura f ON df.id_detallefactura = f.id_detallefactura JOIN cliente c ON df.id_cliente = c.id_cliente', (err:any, rows:any)=>{
-        
-        const facturas = [...rows].filter((row)=>(row.id_tipocliente == 2))
-        const boletas = [...rows].filter((row)=>(row.id_tipocliente == 1))
-        
-        console.log('facturas', facturas)
-        console.log('boletas', boletas)
+registrosRouter.get("/obtener-facturas", (req: Request, res: Response) => {
+    db.query('SELECT * FROM detalle_factura df JOIN factura f ON df.id_detallefactura = f.id_detallefactura JOIN cliente c ON df.id_cliente = c.id_cliente', (err: any, rows: any) => {
+
+        const facturas = [...rows].filter((row) => (row.id_tipocliente == 2))
+        const boletas = [...rows].filter((row) => (row.id_tipocliente == 1))
 
         res.send({
             boletas: boletas,
@@ -277,15 +274,35 @@ registrosRouter.get("/obtener-facturas", (req: Request, res: Response)=>{
     })
 })
 
-registrosRouter.post("/anular", (req: Request, res: Response)=>{
+registrosRouter.post("/anular", (req: Request, res: Response) => {
     const id = req.body.id
-    db.query(`UPDATE detalle_factura SET estado = 'CANCELADO' WHERE id_detallefactura = ${id}`, (err:any, results:any, fields:any)=>{
-        if(!err){
-            console.log(results)
-            res.send('Factura cancelada')
-            console.log('Factura cancelada')
+    console.log(id)
+    db.query(`SELECT * FROM detalle_factura df JOIN detalle_productos dp ON df.id_detallefactura=dp.id_detallefactura JOIN factura f ON f.id_detallefactura = df.id_detallefactura JOIN producto p on p.id_producto = dp.id_producto  WHERE df.id_detallefactura=${id}`, (err: any, result: any) => {
+
+        if (result[0].estado == "FACTURADO") {
+            if (!err) {
+                result.map((pedido: any) => {
+                    const { id_producto, cantidad } = pedido
+                    db.query(`SELECT * FROM producto WHERE id_producto = ${id_producto}`, (err: any, producto: any) => {
+                        db.query(`UPDATE producto SET stock=${producto[0].stock + cantidad} WHERE id_producto = ${id_producto}`, (err: any, fields: any) => {
+                            if (!err) {
+                                console.log('Stock actualizado')
+                            }
+                        })
+                    })
+                })
+
+                db.query(`UPDATE detalle_factura SET estado ="CANCELADO" WHERE id_detallefactura = ${id}`, (err: any) => {
+                    if (!err) {
+                        console.log('Factura cancelada')
+                    }
+                })
+
+            } else {
+                console.log(err)
+            }
         }else{
-            console.log(err)
+            console.log('Factura ya cancelada')
         }
     })
 })

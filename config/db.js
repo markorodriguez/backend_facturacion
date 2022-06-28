@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mysql = require('mysql2');
 const db = mysql.createPool({
-    host: 'sql10.freemysqlhosting.net',
+    host: 'us-cdbr-east-05.cleardb.net',
     port: '3306',
-    user: 'sql10501082',
-    password: '574iXx9hzB',
-    database: 'sql10501082',
+    user: 'bbd643064776c2',
+    password: '0059af43',
+    database: 'heroku_ccb3b4de901dd74',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 5,
     queueLimit: 0
 });
 db.getConnection((err, connection) => {
