@@ -75,9 +75,11 @@ clienteRouter.post('/consumir-dni', (req: Request, res: Response) => {
 
     db.query(`SELECT * FROM cliente WHERE dni = ${params.dni}`, (err: any, result: any) => {
 
-        const fixedApe = result[0].apellidos.split(" ", 2)
+        
 
         if (result.length > 0) {
+            const fixedApe = result[0]?.apellidos.split(" ", 2)
+            
             res.json({
                 message: 'Success',
                 dni: result[0].dni,

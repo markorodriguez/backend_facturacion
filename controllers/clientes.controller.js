@@ -72,8 +72,9 @@ clienteRouter.post('/consumir-ruc', (req, res) => {
 clienteRouter.post('/consumir-dni', (req, res) => {
     const params = req.body;
     db_1.default.query(`SELECT * FROM cliente WHERE dni = ${params.dni}`, (err, result) => {
-        const fixedApe = result[0].apellidos.split(" ", 2);
+        var _a;
         if (result.length > 0) {
+            const fixedApe = (_a = result[0]) === null || _a === void 0 ? void 0 : _a.apellidos.split(" ", 2);
             res.json({
                 message: 'Success',
                 dni: result[0].dni,
