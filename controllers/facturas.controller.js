@@ -28,6 +28,16 @@ registrosRouter.post("/generar-factura", (req, res) => {
                                 cantidad: Number.parseInt(producto.cantidad),
                                 id_detallefactura: id_detallefactura,
                             }, (err) => {
+                                db_1.default.query(`SELECT * from producto WHERE id_producto = ${producto.id_producto}`, (err, p) => {
+                                    if (!err) {
+                                        db_1.default.query(`UPDATE producto SET stock=${p[0].stock - producto.cantidad} WHERE id_producto = ${producto.id_producto}`, (err) => {
+                                            !err ? console.log('Stock actualizado') : console.log(err);
+                                        });
+                                    }
+                                    else {
+                                        console.log(err);
+                                    }
+                                });
                                 !err ? console.log('DETALLE PRODUCTO') : console.log(err);
                             });
                         });
@@ -86,6 +96,16 @@ registrosRouter.post("/generar-factura", (req, res) => {
                                         cantidad: Number.parseInt(producto.cantidad),
                                         id_detallefactura: id_detallefactura,
                                     }, (err) => {
+                                        db_1.default.query(`SELECT * from producto WHERE id_producto = ${producto.id_producto}`, (err, p) => {
+                                            if (!err) {
+                                                db_1.default.query(`UPDATE producto SET stock=${p[0].stock - producto.cantidad} WHERE id_producto = ${producto.id_producto}`, (err) => {
+                                                    !err ? console.log('Stock actualizado') : console.log(err);
+                                                });
+                                            }
+                                            else {
+                                                console.log(err);
+                                            }
+                                        });
                                         !err ? console.log('DETALLE PRODUCTO') : console.log(err);
                                     });
                                 });
@@ -150,6 +170,16 @@ registrosRouter.post("/generar-boleta", (req, res) => {
                                 cantidad: Number.parseInt(producto.cantidad),
                                 id_detallefactura: id_detallefactura,
                             }, (err) => {
+                                db_1.default.query(`SELECT * from producto WHERE id_producto = ${producto.id_producto}`, (err, p) => {
+                                    if (!err) {
+                                        db_1.default.query(`UPDATE producto SET stock=${p[0].stock - producto.cantidad} WHERE id_producto = ${producto.id_producto}`, (err) => {
+                                            !err ? console.log('Stock actualizado') : console.log(err);
+                                        });
+                                    }
+                                    else {
+                                        console.log(err);
+                                    }
+                                });
                                 !err ? console.log('DETALLE PRODUCTO') : console.log(err);
                             });
                         });
@@ -210,6 +240,16 @@ registrosRouter.post("/generar-boleta", (req, res) => {
                                         cantidad: Number.parseInt(producto.cantidad),
                                         id_detallefactura: id_detallefactura,
                                     }, (err) => {
+                                        db_1.default.query(`SELECT * from producto WHERE id_producto = ${producto.id_producto}`, (err, p) => {
+                                            if (!err) {
+                                                db_1.default.query(`UPDATE producto SET stock=${p[0].stock - producto.cantidad} WHERE id_producto = ${producto.id_producto}`, (err) => {
+                                                    !err ? console.log('Stock actualizado') : console.log(err);
+                                                });
+                                            }
+                                            else {
+                                                console.log(err);
+                                            }
+                                        });
                                         !err ? console.log('DETALLE PRODUCTO') : console.log(err);
                                     });
                                 });
