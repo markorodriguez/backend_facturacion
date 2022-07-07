@@ -7,6 +7,7 @@ const productos_controller_1 = __importDefault(require("./controllers/productos.
 const usuarios_controller_1 = __importDefault(require("./controllers/usuarios.controller"));
 const clientes_controller_1 = __importDefault(require("./controllers/clientes.controller"));
 const facturas_controller_1 = __importDefault(require("./controllers/facturas.controller"));
+const dashboard_controller_1 = __importDefault(require("./controllers/dashboard.controller"));
 require('dotenv').config();
 const express = require('express');
 const app = express();
@@ -24,3 +25,4 @@ app.use("/productos", productos_controller_1.default);
 app.use("/usuarios", usuarios_controller_1.default);
 app.use("/clientes", clientes_controller_1.default);
 app.use("/facturas", facturas_controller_1.default);
+app.use("/reportes", dashboard_controller_1.default);
