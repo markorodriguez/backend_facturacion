@@ -13,7 +13,7 @@ dashboardRouter.get("/", (req, res) => {
         const filteredTiempo = rows.filter((el) => el.tiempoejecucion != null);
         const filtradoPorAno = [...filteredTiempo].filter((factura) => factura.fecha.slice(6, 10) == año);
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        console.log(filteredTiempo[0].fecha.slice(3, 5));
+        //console.log(filteredTiempo[0].fecha.slice(3, 5))
         const reportes = [];
         meses.map((mes, index) => {
             const filtradoPorMes = [...filtradoPorAno].filter((factura) => factura.fecha.slice(3, 5) == index + 1);
@@ -28,8 +28,30 @@ dashboardRouter.get("/", (req, res) => {
             };
             reportes.push(gananciasMes);
         });
-        console.log(reportes);
+        //console.log(reportes)
         res.json(reportes);
+    });
+});
+dashboardRouter.post("/reporte-diario", (req, res) => {
+    const fecha = (0, moment_1.default)(req.body.fecha).format('DD-MM-YYYY');
+    console.log((0, moment_1.default)(req.body.fecha).format('DD-MM-YYYY'));
+    db_1.default.query(`SELECT * FROM detalle_factura df JOIN detalle_productos dp ON dp.id_detallefactura = df.id_detallefactura WHERE fecha = '${fecha}'`, (err, rows) => {
+        if (!err) {
+            const rpta = {
+                total: rows.length,
+                tiempoPromedio: rows.length > 0 ? (([...rows].reduce((acc, b) => acc + Number.parseInt(b.tiempoejecucion), 0)) / rows.length).toFixed(2) : 0,
+                ganancias: rows.length > 0 ? [...rows].reduce((acc, b) => acc + (Number.parseFloat(b.importetotal) + Number.parseFloat(b.igv)), 0).toFixed(2) : 0,
+                efectividad: {
+                    correctas: [...rows].filter((el) => el.estado == 'FACTURADO').length,
+                    canceladas: [...rows].filter((el) => el.estado != 'FACTURADO').length
+                }
+            };
+            console.log(rpta);
+            res.send(rpta);
+        }
+        else {
+            console.log(err);
+        }
     });
 });
 exports.default = dashboardRouter;
